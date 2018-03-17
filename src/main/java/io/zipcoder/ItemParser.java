@@ -1,14 +1,10 @@
 package io.zipcoder;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
-
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ItemParser {
-
-    Map<String, String> itemAttributes;
 
     public ArrayList<String> parseRawDataIntoStringArray(String rawData){
         String stringPattern = "##";
@@ -16,59 +12,74 @@ public class ItemParser {
         return response;
     }
 
-    public List<String[]> createArrayOfAttribute(ArrayList<String> lessRawData) {
-        List<String[]> itemInfo = new ArrayList<>();
-        for(int i = 0; i < lessRawData.size(); i ++) {
-            itemInfo.add((findKeyValuePairsInRawItemData(lessRawData.get(i))).toArray(new String[4]));
+    public Item parseStringIntoItem(String rawItem) throws ItemParseException {
+
+            String name = parseName(rawItem);
+            String priceAsString = parsePrice(rawItem);
+            Double price = Double.parseDouble(priceAsString);
+            String type = parseType(rawItem);
+            String expiration = parseExpiration(rawItem);
+
+            return new Item(name, price, type, expiration);
+    }
+
+    public String parseName(String rawItem) throws ItemParseException {
+        Pattern[] name = new Pattern[4];
+
+        name[0] = Pattern.compile("(?i)([n][a][m][e]:)([m][i][l][k])");
+        name[1] = Pattern.compile("(?i)([n][a][m][e]:)([b][r][e][a][d])");
+        name[2] = Pattern.compile("(?i)([n][a][m][e]:)([a][p][p][l][e][s])");
+        name[3] = Pattern.compile("(?i)([n][a][m][e]:)([c][o0][o0][k][i][e][s]?)");
+
+        for (int i = 0; i < name.length; i++) {
+            Matcher matcher = name[i].matcher(rawItem);
+            if (matcher.find()) {
+                switch (i) {
+                    case 0:
+                        return "Milk";
+                    case 1:
+                        return "Bread";
+                    case 2:
+                        return "Apples";
+                    case 3:
+                        return "Cookies";
+                }
+            }
         }
-        return itemInfo;
+        throw new ItemParseException();
     }
 
-    public void passArrayIntoParser(List<String[]> list) throws ItemParseException{
-        for(String[] key : list) {
-
-            String[] name = splitIntoKeyAndValue("[n][a][m][e]",key[0]);
-            String[] price = splitIntoKeyAndValue("[p][r][i][c][e]", key[1]);
-            String[] type = splitIntoKeyAndValue("[t][y][p][e]", key[2]);
-            String[] expiration = splitIntoKeyAndValue("[e][x][p][i][r][a][t][i][o][n]", key[3]);
-
-            addtoMap(name);
-            addtoMap(price);
-            addtoMap(type);
-            addtoMap(expiration);
-        }
-    }
-
-    public Item parseStringIntoItem(String rawItem) throws ItemParseException{
-
-        try {
-            String itemName =
-
-        } catch (ItemParseException exception) {
-            throw exception;
-        }
-
-
-        findKeyValuePairsInRawItemData(rawItem);
-        return null;
-    }
-
-    public void addtoMap(String[] array) {
-        itemAttributes.put(array[0], array[1]);
-    }
-
-    public String[] splitIntoKeyAndValue(String attribute, String rawItem) throws ItemParseException{
-        Pattern pattern = Pattern.compile(attribute, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rawItem);
-        String[] keyValue;
+    public String parsePrice(String rawItem) throws ItemParseException {
+        Pattern price = Pattern.compile("((?i)[p][r][i][c][e]:)(\\d\\d?.\\d\\d)");
+        Matcher matcher = price.matcher(rawItem);
 
         if(matcher.find()) {
-             keyValue = matcher.group(0).split(":");
-
+            return matcher.group(2);
         } else {
             throw new ItemParseException();
         }
-        return keyValue;
+    }
+
+    public String parseType(String rawItem) throws ItemParseException {
+        Pattern type = Pattern.compile("(?i)([t][y][p][e]:)([f][o][o][d])");
+        Matcher matcher = type.matcher(rawItem);
+
+        if(matcher.find()) {
+            return matcher.group(2);
+        } else {
+            throw new ItemParseException();
+        }
+    }
+
+    public String parseExpiration(String rawItem) throws ItemParseException {
+        Pattern expiration = Pattern.compile("(?i)([e][x][p][i][r][a][t][i][o][n]:)([\\d][\\d]?.\\d\\d?.\\d\\d\\d?\\d?)");
+        Matcher matcher = expiration.matcher(rawItem);
+
+        if(matcher.find()) {
+            return matcher.group(2);
+        } else {
+            throw new ItemParseException();
+        }
     }
 
     public ArrayList<String> findKeyValuePairsInRawItemData(String rawItem){
