@@ -91,36 +91,36 @@ public class ItemCounter {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for(Map.Entry<String, Integer> entry : nameCounter.entrySet()) {
-            sb.append("\nname:\t\t" + entry.getKey() + "\t\t\tseen: " + entry.getValue() + " time(s)");
-            sb.append("\n==================\t\t\t==================");
+            sb.append(String.format("\nname: %7s\t\tseen: %d time(s)", entry.getKey(), entry.getValue()));
+            sb.append("\n=============\t\t==============");
 
             switch(entry.getKey()) {
                 case "Apples":
                     for(Map.Entry<Double, Integer> price : applePriceCounter.entrySet()) {
-                        sb.append("\nPrice:\t\t" + price.getKey() + "\t\t\tseen: " + price.getValue() + " time(s)");
-                        sb.append("\n------------------\t\t\t------------------");
+                        sb.append(String.format("\nPrice: %6s\t\tseen: %d time(s)", price.getKey(), price.getValue()));
+                        sb.append("\n-------------\t\t--------------");
                     }
                     break;
                 case "Cookies":
                     for(Map.Entry<Double, Integer> price : cookiePriceCounter.entrySet()) {
-                        sb.append("\nPrice:\t\t" + price.getKey() + "\t\t\tseen: " + price.getValue() + " time(s)");
-                        sb.append("\n------------------\t\t\t------------------");
+                        sb.append(String.format("\nPrice: %6s\t\tseen: %d time(s)", price.getKey(), price.getValue()));
+                        sb.append("\n-------------\t\t--------------");
                     }
                     break;
                 case "Milk":
                     for(Map.Entry<Double, Integer> price : milkPriceCounter.entrySet()) {
-                        sb.append("\nPrice:\t\t" + price.getKey() + "\t\t\tseen: " + price.getValue() + " time(s)");
-                        sb.append("\n------------------\t\t\t------------------");
+                        sb.append(String.format("\nPrice: %6s\t\tseen: %d time(s)", price.getKey(), price.getValue()));
+                        sb.append("\n-------------\t\t--------------");
                     }
                     break;
                 case "Bread":
                     for(Map.Entry<Double, Integer> price : breadPriceCounter.entrySet()) {
-                        sb.append("\nPrice:\t\t" + price.getKey() + "\t\t\tseen: " + price.getValue() + " time(s)");
-                        sb.append("\n------------------\t\t\t------------------");
+                        sb.append(String.format("\nPrice: %6s\t\tseen: %d time(s)", price.getKey(),  price.getValue()));
+                        sb.append("\n-------------\t\t--------------");
                     }
             }
         }
-        sb.append("\nErrors\t\t\t\t\t\tseen: " + getExceptionCounter() + " time(s)");
+        sb.append(String.format("\nErrors: \t\t\tseen: %d time(s)", getExceptionCounter()));
         return sb.toString();
     }
 }
